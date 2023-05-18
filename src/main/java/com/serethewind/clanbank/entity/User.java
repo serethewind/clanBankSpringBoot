@@ -45,10 +45,11 @@ public class User {
     private String email;
     @Size(min = 4, max = 6)
     private String gender;
-    @Size(min = 50, max = 500)
+    @Size(min = 5, max = 5000)
     private String address;
     @Size(min = 3)
     private String religion;
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
     @Size(min = 11, max = 11)
     private String bvn;

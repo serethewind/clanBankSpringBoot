@@ -17,4 +17,8 @@ public interface UserService {
     String deleteUser(Long id);
 
     UserResponse updateUser(Long id, UserRequest userRequest);
+
+    UserResponse creditAccount(Long id, double amount);
+
+    UserResponse debitAccount(Long id, double amount);
 }

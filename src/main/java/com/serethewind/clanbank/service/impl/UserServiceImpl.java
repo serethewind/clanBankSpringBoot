@@ -1,6 +1,7 @@
 package com.serethewind.clanbank.service.impl;
 
 import com.serethewind.clanbank.entity.User;
+import com.serethewind.clanbank.exception.ResourceNotFoundException;
 import com.serethewind.clanbank.payload.UserRequest;
 import com.serethewind.clanbank.payload.UserResponse;
 import com.serethewind.clanbank.repository.UserRepository;
@@ -36,24 +37,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return modelMapper.map(user, UserResponse.class);
 
-
-//        user.setFirstName(userRequest.getFirstName());
-//        user.setLastName(userRequest.getLastName());
-//        user.setOtherName(userRequest.getOtherName());
-//        user.setAccountNumber(Utility.generateAccountNumber());
-//        user.setAccountBalance(0.0);
-//        user.setPhoneNumber(userRequest.getPhoneNumber());
-//        user.setAlternativePhoneNumber(userRequest.getAlternativePhoneNumber());
-//        user.setEmail(userRequest.getEmail());
-//        user.setGender(userRequest.getGender());
-//        user.setAddress(userRequest.getAddress());
-//        user.setReligion(userRequest.getReligion());
-//        user.setDateOfBirth(userRequest.getDateOfBirth());
-//        user.setBvn(userRequest.getBvn());
-//        user.setReferralCode(userRequest.getReferralCode());
-//        user.setPassword(userRequest.getPassword());
-//
-//        return userRepository.save(user);
     }
 
 
@@ -75,32 +58,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String deleteUser(Long id) {
-        userRepository.deleteById(id);
-
-
-        return "User with " + id + " has been deleted";
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with id not found in database."));
+        userRepository.delete(user);
+        return "User deleted successfully";
     }
 
     @Override
     public UserResponse updateUser(Long id, UserRequest userRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
-        user.setOtherName(userRequest.getOtherName());
-        user.setAccountNumber(Utility.generateAccountNumber());
-        user.setAccountBalance(0.0);
-        user.setPhoneNumber(userRequest.getPhoneNumber());
-        user.setAlternativePhoneNumber(userRequest.getAlternativePhoneNumber());
-        user.setEmail(userRequest.getEmail());
-        user.setGender(userRequest.getGender());
-        user.setAddress(userRequest.getAddress());
-        user.setReligion(userRequest.getReligion());
-        user.setDateOfBirth(userRequest.getDateOfBirth());
-        user.setBvn(userRequest.getBvn());
-        user.setReferralCode(userRequest.getReferralCode());
-        user.setPassword(userRequest.getPassword());
+        modelMapper.map(userRequest, user);
+        userRepository.save(user);
+        return modelMapper.map(user, UserResponse.class);
+    }
 
-        return userRepository.save(user);
+    @Override
+    public UserResponse creditAccount(Long id, double amount) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with Id not found"));
+        double newBalance = amount + user.getAccountBalance();
+        user.setAccountBalance(newBalance);
+        userRepository.save(user);
+        return modelMapper.map(user, UserResponse.class);
+    }
+
+    @Override
+    public UserResponse debitAccount(Long id, double amount) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with Id not found"));
+        if (amount > user.getAccountBalance()){
+            System.out.println("Insufficient funds, debit failed.");
+        } else {
+            double newBalance = user.getAccountBalance() - amount;
+            user.setAccountBalance(newBalance);
+            userRepository.save(user);
+            return modelMapper.map(user, UserResponse.class);
+        }
+        return null;
     }
 
 

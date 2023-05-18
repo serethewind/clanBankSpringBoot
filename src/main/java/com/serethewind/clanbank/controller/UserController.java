@@ -1,54 +1,55 @@
 package com.serethewind.clanbank.controller;
 
-import com.serethewind.clanbank.entity.User;
 import com.serethewind.clanbank.payload.UserRequest;
+import com.serethewind.clanbank.payload.UserResponse;
 import com.serethewind.clanbank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     UserService userService;
 
 
     @PostMapping
-    public User createUser(@RequestBody UserRequest userRequest) {
-        return userService.registerUser(userRequest);
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+        return new ResponseEntity<>(userService.registerUser(userRequest), HttpStatus.CREATED);
     }
-
-
-//    @PostMapping
-//    public User registerUser(@RequestBody UserRequest userRequest){
-//        return userService.registerUser(userRequest);
-//    }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.fetchAllRegisteredUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return new ResponseEntity<>(userService.fetchAllRegisteredUsers(), HttpStatus.OK);
     }
 
-    //    @GetMapping("/{id}")
-//    public User getSingleUser(@PathVariable("id") Long id){
-//        return userService.fetchSingleUser(id);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public User updateSingleUser(@PathVariable("id") Long id, @RequestBody UserRequest userRequest){
-//        return userService.updateUser(userRequest, id);
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateSingleUser(@PathVariable("id") Long id, @RequestBody UserRequest userRequest) {
+        return new ResponseEntity<>(userService.updateUser(id, userRequest), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
-    public User getSingleUserById(@PathVariable("id") Long id) {
-        return userService.fetchSingleUserById(id);
+    public ResponseEntity<UserResponse> getSingleUserById(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.fetchSingleUserById(id), HttpStatus.OK);
     }
 
-   @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") Long id){
-        return userService.deleteUser(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.OK);
     }
 
+    @PatchMapping("/{id}/credit")
+    public ResponseEntity<UserResponse> creditAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount){
+        return new ResponseEntity<>(userService.creditAccount(id, amount), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/debit")
+    public ResponseEntity<UserResponse> debitAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount){
+        return new ResponseEntity<>(userService.debitAccount(id, amount), HttpStatus.OK);
+    }
 }
