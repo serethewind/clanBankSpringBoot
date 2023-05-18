@@ -1,20 +1,20 @@
 package com.serethewind.clanbank.service;
 
-import com.serethewind.clanbank.entity.User;
 import com.serethewind.clanbank.payload.UserRequest;
+import com.serethewind.clanbank.payload.UserResponse;
 
 import java.util.List;
 
 
 public interface UserService {
 
-    User registerUser(UserRequest userRequest);
+    UserResponse registerUser(UserRequest userRequest);
 
-    List<User> fetchAllRegisteredUsers();
+    List<UserResponse> fetchAllRegisteredUsers();
 
-    User fetchSingleUserById(Long id);
+    UserResponse fetchSingleUserById(Long id);
 
     String deleteUser(Long id);
 
-    User updateUser(Long id, UserRequest userRequest);
+    UserResponse updateUser(Long id, UserRequest userRequest);
 }
