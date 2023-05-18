@@ -31,6 +31,7 @@ public class User {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
+
     private String otherName;
 
     @Size(min = 10, max = 10) //using size already makes the nullable false.

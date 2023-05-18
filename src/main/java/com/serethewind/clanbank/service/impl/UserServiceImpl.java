@@ -20,13 +20,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registerUser(UserRequest userRequest) {
 
-        //check if the user already exists by email
-
-        //save record
-//        if (isExist) {
-//            userRequest = null;
-//        }
-        //save record
         User user = new User();
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
@@ -47,18 +40,29 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+
+
     @Override
     public List<User> fetchAllRegisteredUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public User fetchSingleUser(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public User fetchSingleUserById(Long id) {
+      return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
     }
 
     @Override
-    public User updateUser(UserRequest userRequest, Long id) {
+    public String deleteUser(Long id) {
+       userRepository.deleteById(id);
+
+
+        return "User with " + id + " has been deleted";
+    }
+
+    @Override
+    public User updateUser(Long id, UserRequest userRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
@@ -78,6 +82,8 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
+
 
 
 }

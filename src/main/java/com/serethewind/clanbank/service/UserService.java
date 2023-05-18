@@ -12,7 +12,9 @@ public interface UserService {
 
     List<User> fetchAllRegisteredUsers();
 
-    User fetchSingleUser(Long id);
+    User fetchSingleUserById(Long id);
 
-    User updateUser(UserRequest userRequest, Long id);
+    String deleteUser(Long id);
+
+    User updateUser(Long id, UserRequest userRequest);
 }

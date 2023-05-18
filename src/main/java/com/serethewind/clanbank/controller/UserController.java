@@ -15,25 +15,40 @@ public class UserController {
     @Autowired
     UserService userService;
 
+
     @PostMapping
-    public User registerUser(@RequestBody UserRequest userRequest){
+    public User createUser(@RequestBody UserRequest userRequest) {
         return userService.registerUser(userRequest);
     }
 
+
+//    @PostMapping
+//    public User registerUser(@RequestBody UserRequest userRequest){
+//        return userService.registerUser(userRequest);
+//    }
+
     @GetMapping
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userService.fetchAllRegisteredUsers();
     }
 
+    //    @GetMapping("/{id}")
+//    public User getSingleUser(@PathVariable("id") Long id){
+//        return userService.fetchSingleUser(id);
+//    }
+//
+//    @PutMapping("/{id}")
+//    public User updateSingleUser(@PathVariable("id") Long id, @RequestBody UserRequest userRequest){
+//        return userService.updateUser(userRequest, id);
+//    }
     @GetMapping("/{id}")
-    public User getSingleUser(@PathVariable("id") Long id){
-        return userService.fetchSingleUser(id);
+    public User getSingleUserById(@PathVariable("id") Long id) {
+        return userService.fetchSingleUserById(id);
     }
 
-    @PutMapping("/{id}")
-    public User updateSingleUser(@PathVariable("id") Long id, @RequestBody UserRequest userRequest){
-        return userService.updateUser(userRequest, id);
+   @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable("id") Long id){
+        return userService.deleteUser(id);
     }
-
 
 }
