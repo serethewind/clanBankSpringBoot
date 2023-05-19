@@ -43,13 +43,18 @@ public class UserController {
         return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}/credit")
-    public ResponseEntity<UserResponse> creditAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount){
+    @PatchMapping("/{id}/top-up")
+    public ResponseEntity<String> creditAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount) {
         return new ResponseEntity<>(userService.creditAccount(id, amount), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}/debit")
-    public ResponseEntity<UserResponse> debitAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount){
+    @PatchMapping("/{id}/withdraw")
+    public ResponseEntity<String> debitAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount) {
         return new ResponseEntity<>(userService.debitAccount(id, amount), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/transfer")
+    public ResponseEntity<String> transferToAnotherUser(@PathVariable("id") Long id, @RequestParam("amount") double amount, @RequestParam("accountNumber") String accountNumber) {
+        return new ResponseEntity<>(userService.transferToOtherUser(id, accountNumber, amount), HttpStatus.OK);
     }
 }

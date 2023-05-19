@@ -18,7 +18,9 @@ public interface UserService {
 
     UserResponse updateUser(Long id, UserRequest userRequest);
 
-    UserResponse creditAccount(Long id, double amount);
+    String creditAccount(Long id, double amount);
 
-    UserResponse debitAccount(Long id, double amount);
+    String debitAccount(Long id, double amount);
+
+    String transferToOtherUser(Long id, String accountNumber, double amount);
 }
