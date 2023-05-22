@@ -33,7 +33,7 @@ public class User {
     private String lastName;
 
     private String otherName;
-
+    @Column(unique = true)
     @Size(min = 10, max = 10) //using size already makes the nullable false.
     private String accountNumber;
     private double accountBalance; //to be set to zero later

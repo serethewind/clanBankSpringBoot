@@ -8,7 +8,6 @@ import com.serethewind.clanbank.repository.UserRepository;
 import com.serethewind.clanbank.service.UserService;
 import com.serethewind.clanbank.util.Utility;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     ModelMapper modelMapper;
 
-    @Autowired
     public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
@@ -72,45 +70,66 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String creditAccount(Long id, double amount) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with Id not found"));
-        double newBalance = amount + user.getAccountBalance();
-        user.setAccountBalance(newBalance);
-        userRepository.save(user);
-        String response = "Account successfully credited. Your new account balance is " + user.getAccountBalance();
-        return response;
-    }
-
-    @Override
-    public String debitAccount(Long id, double amount) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with Id not found"));
-        String response = "";
-        if (amount > user.getAccountBalance()) {
-            response = "Insufficient funds, debit failed.";
-        } else {
-            double newBalance = user.getAccountBalance() - amount;
-            user.setAccountBalance(newBalance);
-            userRepository.save(user);
-            response = "Account successfully debited. Your new account balance is " + user.getAccountBalance();
-        }
-        return response;
-    }
-
-    @Override
-    public String transferToOtherUser(Long id, String accountNumber, double amount) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with id not found"));
+    public String creditAccount(String accountNumber, double amount) {
         Boolean status = userRepository.existsByAccountNumber(accountNumber);
         String response = "";
         if (!status) {
-            response = "Account to be credited incorrect. Try again.";
-        } else if (status && user.getAccountBalance() < amount) {
-            response = "Insufficient funds.";
-        } else if (status && user.getAccountBalance() >= amount) {
-            User recipientUser = userRepository.findByAccountNumber(accountNumber);
-            debitAccount(user.getId(), amount);
-            creditAccount(recipientUser.getId(), amount);
-            response = (amount + " successfully transferred. Balance is " + user.getAccountBalance());
+            response = "Account sign in details not correct";
+        } else {
+            User user = userRepository.findByAccountNumber(accountNumber);
+            double newBalance = amount + user.getAccountBalance();
+            user.setAccountBalance(newBalance);
+            userRepository.save(user);
+            response = "Account successfully credited. Your new account balance is " + user.getAccountBalance();
         }
+
+        return response;
+    }
+
+    @Override
+    public String debitAccount(String accountNumber, double amount) {
+        Boolean status = userRepository.existsByAccountNumber(accountNumber);
+        String response = "";
+        if (!status) {
+            response = String.valueOf(new ResourceNotFoundException("User not found"));
+        } else {
+            User user = userRepository.findByAccountNumber(accountNumber);
+            if (amount > user.getAccountBalance()) {
+                response = "Insufficient funds, debit failed.";
+            } else {
+                double newBalance = user.getAccountBalance() - amount;
+                user.setAccountBalance(newBalance);
+                userRepository.save(user);
+                response = "Account successfully debited. Your new account balance is " + user.getAccountBalance();
+            }
+        }
+
+        return response;
+    }
+
+    @Override
+    public String transferToOtherUser(String accountNumber, String recipientAccountNumber, double amount) {
+
+        Boolean status = userRepository.existsByAccountNumber(accountNumber);
+        String response = "";
+
+        if (!status) {
+            response = "Account sign in details not correct";
+        } else {
+            User user = userRepository.findByAccountNumber(accountNumber);
+            Boolean recipientStatus = userRepository.existsByAccountNumber(recipientAccountNumber);
+            if (!recipientStatus) {
+                response = "Account to be credited incorrect. Try again.";
+            } else if (recipientStatus && user.getAccountBalance() < amount) {
+                response = "Insufficient funds.";
+            } else if (recipientStatus && user.getAccountBalance() >= amount) {
+                User recipientUser = userRepository.findByAccountNumber(recipientAccountNumber);
+                debitAccount(user.getAccountNumber(), amount);
+                creditAccount(recipientUser.getAccountNumber(), amount);
+                response = (amount + " successfully transferred. Balance is " + user.getAccountBalance());
+            }
+        }
+
         return response;
     }
 

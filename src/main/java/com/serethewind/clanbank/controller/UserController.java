@@ -44,17 +44,17 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/top-up")
-    public ResponseEntity<String> creditAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount) {
-        return new ResponseEntity<>(userService.creditAccount(id, amount), HttpStatus.OK);
+    public ResponseEntity<String> creditAccount(@PathVariable("id") String accountNumber, @RequestParam("amount") double amount) {
+        return new ResponseEntity<>(userService.creditAccount(accountNumber, amount), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/withdraw")
-    public ResponseEntity<String> debitAccount(@PathVariable("id") Long id, @RequestParam("amount") double amount) {
-        return new ResponseEntity<>(userService.debitAccount(id, amount), HttpStatus.OK);
+    public ResponseEntity<String> debitAccount(@PathVariable("id") String accountNumber, @RequestParam("amount") double amount) {
+        return new ResponseEntity<>(userService.debitAccount(accountNumber, amount), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/transfer")
-    public ResponseEntity<String> transferToAnotherUser(@PathVariable("id") Long id, @RequestParam("amount") double amount, @RequestParam("accountNumber") String accountNumber) {
-        return new ResponseEntity<>(userService.transferToOtherUser(id, accountNumber, amount), HttpStatus.OK);
+    public ResponseEntity<String> transferToAnotherUser(@PathVariable("id") String accountNumber, @RequestParam("amount") double amount, @RequestParam("accountNumber") String recipientAccountNumber) {
+        return new ResponseEntity<>(userService.transferToOtherUser(accountNumber, recipientAccountNumber, amount), HttpStatus.OK);
     }
 }
